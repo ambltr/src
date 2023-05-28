@@ -1,0 +1,79 @@
+#include<bits/stdc++.h>
+using namespace std;
+class graph
+{
+    public:
+    int v;
+    list<int>*l;
+    graph(int s)
+    {
+        v=s;
+        l=new list<int>[v];
+    }
+    void addEdge(int x,int y)
+    {
+        l[x].push_back(y);
+        l[y].push_back(x);
+    }
+    void printGraph()
+    {
+        for(int j=0;j<v;j++)
+        {
+            cout<<j<<"->";
+            list<int>::iterator i;
+            for(i=l[j].begin();i!=l[j].end();i++)
+            {
+                cout<<*i<<"->";
+            }
+            cout<<endl;
+        }
+    }
+    void color()
+    {
+        int result[v];
+        result[0]=0;
+        bool available[v]={false};
+        for(int i=1;i<v;i++)
+        {
+            result[i]=-1;
+        }
+        for(int i=1;i<v;i++)
+        {
+            list<int>::iterator u;
+            for(u=l[i].begin();u!=l[i].end();u++)
+            {
+                if(result[*u]=-1)
+                available[result[*u]]=true;
+            }
+            int cr;
+            for(cr=0;cr<v;cr++)
+            {
+                if(available[cr]==false)
+                break;
+            }
+            result[i]=cr;
+            for(u=l[i].begin();u!=l[i].end();u++)
+            {
+                if(result[*u]=-1)
+                available[result[*u]]=false;
+            }
+        }
+        for(int i=0;i<v;i++)
+        {
+            cout<<"Vertex"<<i<<"-->"<<"color";
+            cout<<result[i]<<endl;
+        }
+    }
+};
+int main()
+{
+    graph g(4);
+    g.addEdge(0,1);
+    g.addEdge(0,2);
+    g.addEdge(1,2);
+    g.addEdge(2,3);
+
+    // g.printGraph();
+    g.color();
+    return 0;
+}

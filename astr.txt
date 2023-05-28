@@ -1,0 +1,104 @@
+#include <iostream>
+#include <list>
+#include <queue>
+#include <vector>
+#include <climits>
+
+using namespace std;
+
+class Graph {
+public:
+    int V;
+    list<pair<int, int>>* adj;
+
+    Graph(int V) {
+        this->V = V;
+        adj = new list<pair<int, int>>[V];
+    }
+
+    void addEdge(int u, int v, int weight) {
+        adj[u].push_back(make_pair(v, weight));
+        adj[v].push_back(make_pair(u, weight));
+    }
+
+    int aStar(int source, int destination);
+};
+
+int Graph::aStar(int source, int destination) {
+    // Create a priority queue of pair<int, int>
+    // The first element represents the total cost (f-score)
+    // The second element represents the vertex
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+
+    // Create a vector to store the estimated distance (h-score) from source to each vertex
+    vector<int> h(V, INT_MAX);
+
+    // Create a vector to store the actual cost (g-score) from source to each vertex
+    vector<int> g(V, INT_MAX);
+
+    // Create a vector to store the parent of each vertex in the optimal path
+    vector<int> parent(V, -1);
+
+    // Initialize the source vertex
+    h[source] = 0;
+    g[source] = 0;
+    pq.push(make_pair(h[source], source));
+
+    while (!pq.empty()) {
+        int u = pq.top().second;
+        pq.pop();
+
+        // Destination vertex reached
+        if (u == destination)
+            return g[u];
+
+        // Explore neighbors of u
+        for (auto& neighbor : adj[u]) {
+            int v = neighbor.first;
+            int weight = neighbor.second;
+
+            int gScore = g[u] + weight;
+            int fScore = gScore + h[v];
+            if (fScore < g[v]) {
+                parent[v] = u;
+                g[v] = gScore;
+                pq.push(make_pair(fScore, v));
+            }
+        }
+    }
+    return -1;
+
+}
+
+int main() {
+    int V, E;
+    cout << "Enter the number of vertices: ";
+    cin >> V;
+
+    Graph g(V);
+
+    cout << "Enter the number of edges: ";
+    cin >> E;
+
+    cout << "Enter the edges and weights (vertex1 vertex2 weight):\n";
+    for (int i = 0; i < E; i++) {
+        int u, v, weight;
+        cin >> u >> v >> weight;
+        g.addEdge(u, v, weight);
+    }
+
+    int source, destination;
+    cout << "Enter the source vertex: ";
+    cin >> source;
+    cout << "Enter the destination vertex: ";
+    cin >> destination;
+
+    int shortestDistance = g.aStar(source, destination);
+
+    if (shortestDistance != -1)
+        cout << "Shortest distance from vertex " << source << " to vertex " << destination << " is: " << shortestDistance << endl;
+    else
+        cout << "There is no path from vertex " << source << " to vertex " << destination << endl;
+
+    return 0;
+}
